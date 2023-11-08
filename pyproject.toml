@@ -1,0 +1,54 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "eeauth"
+dynamic = ["version"]
+description = "An Earth Engine account manager."
+readme = "README.md"
+license = { file = "LICENSE" }
+requires-python = ">=3.9"
+authors = [{ name = "Aaron Zuspan" }]
+keywords = [
+    "earthengine",
+    "gee",
+    "jupyter",
+    "notebook",
+]
+dependencies = [
+    "earthengine-api",
+]
+
+[project.urls]
+Homepage = "https://github.com/aazuspan/eeauth"
+
+[tool.hatch.version]
+path = "src/eeauth/__init__.py"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/eeauth"]
+
+[tool.hatch.build.targets.sdist]
+include = ["/src"]
+
+[tool.hatch.envs.default]
+dependencies = ["pre-commit"]
+
+[tool.hatch.envs.test]
+dependencies = [
+    "pytest",
+    "pytest-cov",
+]
+
+[tool.hatch.envs.test.scripts]
+all = "pytest . {args}"
+cov = "pytest . --cov=src/eeauth {args}"
+
+[tool.ruff]
+select = ["E", "I", "F", "B", "FA", "UP", "PT", "Q", "RET", "SIM", "PERF"]
+fix = true
+show-fixes = true
+
+[tool.ruff.isort]
+known-first-party = ["eeauth"]
