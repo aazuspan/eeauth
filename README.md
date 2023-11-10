@@ -16,7 +16,7 @@ pip install git+https://github.com/aazuspan/eeauth.git
 
 ### Authenticate
 
-First, import `eeauth` to attach new functions to `ee.Authenticate` and `ee.Initialize`. Next, authenticate a user by running `ee.Authenticate.as_user("username")` and following the usual authentication instructions, being sure to select the correct Google account[^username]. You can authenticate as many different users as needed, and `eeauth` will store their credentials so that they can be retrieved when needed.
+Import `eeauth`, then authenticate a user by running `ee.Authenticate.as_user("username")` and following the usual authentication instructions, being sure to select the correct Google account[^username]. The credentials for each authenticated user are stored by `eeauth` for later use.
 
 ```python
 import ee
@@ -30,7 +30,6 @@ ee.Authenticate.as_user("work")
 ### Initialize
 
 With two users authenticated, you can now initialize Earth Engine with a specific user and switch between them at will.
-
 
 ```python
 # Get tasks from your "personal" account
@@ -51,12 +50,12 @@ ee.data.getTaskList()
 >>> eeauth.get_initialized_user()
 "work"
 
+>>> # Set the default user for `ee.Initialize()`
+>>> eeauth.activate_user("personal")
+
 >>> # List the currently registered users
 >>> eeauth.list_users()
 ["personal", "work"]
-
->>> # Set the default user for `ee.Initialize()`
->>> eeauth.activate_user("personal")
 
 >>> # Delete a set of credentials
 >>> eeauth.remove_user("work")
