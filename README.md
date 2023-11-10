@@ -69,7 +69,7 @@ When you run `ee.Authenticate()`, Earth Engine stores a single credential file o
 
 ### Can I still use `ee.Initialize()`?
 
-Sure! Earth Engine will continue to store the most recently authenticated credentials, so `ee.Initialize()` will work like it always has. You can also run `eeauth activate [USER]` in a terminal to change which user gets initialized by default.
+Earth Engine will continue to store the most recently authenticated credentials, so `ee.Initialize()` will work like it always has. You can also run `eeauth activate [USER]` in a terminal to change which user gets initialized by default.
 
 ### Is it safe?
 

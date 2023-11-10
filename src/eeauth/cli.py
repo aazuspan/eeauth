@@ -4,8 +4,8 @@ from rich.prompt import Confirm
 from rich.table import Table
 
 from .auth import (
-    _authenticate,
     activate_user,
+    authenticate,
     get_default_user,
     list_users,
     remove_user,
@@ -20,12 +20,12 @@ def cli():
     print("")
 
 
-@cli.command()
+@cli.command(name="authenticate")
 @click.argument("user")
 @click.option(
     "--auth-mode", "-m", default="notebook", help="The authentication mode to use."
 )
-def authenticate(user, auth_mode):
+def authenticate_command(user, auth_mode):
     """Authenticate USER and store their credentials."""
     if user in list_users() and not Confirm.ask(
         f"User [bold cyan]{user}[/] is already authenticated. Overwrite credentials?",
@@ -34,11 +34,9 @@ def authenticate(user, auth_mode):
         print("")
         return
 
-    _authenticate(user, auth_mode)
-    print(
-        f"\nAuthenticated [bold cyan]{user}[/]! "
-        "Run `eeauth activate --user {user}` to set a new default user.\n"
-    )
+    authenticate(user, auth_mode)
+    print(f"\nAuthenticated [bold cyan]{user}[/]!\n")
+    print(f"[italic]- Run `eeauth activate --user {user}` to set a new default user.\n")
 
 
 @cli.command()
@@ -49,11 +47,9 @@ def activate(user):
         activate_user(user)
         print(f"Activated [bold cyan]{user}[/] as the default Earth Engine user.\n")
     except UserNotFoundError:
-        print(
-            f"User [bold cyan]{user}[/] not found in the registry. "
-            "Run `eeauth list` to see all authenticated users. "
-            f"Run `eeauth authenticate --user {user}` to add a new user.\n"
-        )
+        print(f"User [bold cyan]{user}[/] not found in the registry.\n")
+        print("[italic]- Run `eeauth list` to see all authenticated users.")
+        print(f"[italic]- Run `eeauth authenticate --user {user}` to add a new user.\n")
 
 
 @cli.command(name="list")
@@ -75,11 +71,12 @@ def list_command():
 
     with open_user_registry() as reg:
         for user, creds in reg.items():
+            date_created = creds.get("date_created")
             row_style = None
             if user == default_user:
                 user += "*"
                 row_style = "bold cyan"
-            table.add_row(user, creds["date_created"], style=row_style)
+            table.add_row(user, date_created, style=row_style)
 
     print(table)
     print("")
@@ -99,18 +96,13 @@ def remove(user):
         "Are you sure you want to remove it?",
         default=False,
     ):
-        print("")
+        print("Cancelling.\n")
         return
 
-    print("")
     try:
         remove_user(user)
-        print(
-            f"Removed [bold cyan]{user}[/] from the registry. "
-            "The associated credentials have been forgotten.\n"
-        )
+        print(f"Removed [bold cyan]{user}[/] from the registry.\n")
+        print("[italic]- The associated credentials have been forgotten.\n")
     except UserNotFoundError:
-        print(
-            f"User [bold cyan]{user}[/] not found in the registry. "
-            "Run `eeauth list` to see all authenticated users.\n"
-        )
+        print(f"User [bold cyan]{user}[/] not found in the registry.\n")
+        print("[italic]- Run `eeauth list` to see all authenticated users.\n")
