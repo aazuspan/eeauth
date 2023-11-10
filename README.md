@@ -41,51 +41,43 @@ ee.Initialize.as_user("work")
 ee.data.getTaskList()
 ```
 
-### Helpers
+### CLI
 
-`eeauth` contains some other helpful functions for managing Earth Engine authentication.
+The `eeauth` command line interface lets you manage your authenticated users from the terminal.
 
-```python
->>> # Get the name of the initialized user
->>> eeauth.get_initialized_user()
-"work"
-
->>> # Set the default user for `ee.Initialize()`
->>> eeauth.activate_user("personal")
-
->>> # List the currently registered users
->>> eeauth.list_users()
-["personal", "work"]
-
->>> # Delete a set of credentials
->>> eeauth.remove_user("work")
->>> eeauth.list_users()
-["personal"]
-
->>> # Delete all stored credentials
->>> eeauth.reset()
->>> eeauth.list_users()
-[]
+```bash
+ Usage: eeauth [OPTIONS] COMMAND [ARGS]...                      
+                                                                
+╭─ Options ────────────────────────────────────────────────────╮
+│ --version      Show the version and exit.                    │
+│ --help         Show this message and exit.                   │
+╰──────────────────────────────────────────────────────────────╯
+╭─ Commands ───────────────────────────────────────────────────╮
+│ activate      Set USER as the default Earth Engine user.     │
+│ authenticate  Authenticate USER and store their credentials. │
+│ list          List all authenticated users.                  │
+│ remove        Remove USER from the registry.                 │
+╰──────────────────────────────────────────────────────────────╯
 ```
 
 
-## FAQ[^faq]
+## FAQ
 
 ### How does it work?
 
-Typically when you use `ee.Authenticate()` and `ee.Initialize()`, Earth Engine stores a single credential file on your local machine. To switch accounts, you need to repeat the authentication process, replacing your old credentials with new credentials. `eeauth` allows you to store multiple credentials tied to unique usernames, so that you can quickly switch between authenticated users without the hassle of re-authenticating every time.
+When you run `ee.Authenticate()`, Earth Engine stores a single credential file on your local machine. To initialize with a different account, you typically need to repeat the authentication process, replacing your old credentials with new credentials. `eeauth` allows you to store multiple credentials tied to unique usernames, so that you can quickly switch between authenticated users without the hassle of re-authenticating every time.
 
 ### Can I still use `ee.Initialize()`?
 
-Sure! Earth Engine will continue to store the most recently authenticated credentials, so `ee.Initialize()` will work like it always has. You can also use `eeauth.activate_user` to change which user gets initialized by default.
+Sure! Earth Engine will continue to store the most recently authenticated credentials, so `ee.Initialize()` will work like it always has. You can also run `eeauth activate [USER]` in a terminal to change which user gets initialized by default.
 
 ### Is it safe?
 
-Like Earth Engine, `eeauth` stores your credentials in an unencrypted local file (`~/.config/eeauth/registry.json`). As long as you don't share that file, you should be good to go.
+Like Earth Engine, `eeauth` stores your credentials in an unencrypted local file[^registry]. As long as you don't share that file, you should be good to go.
 
 ### Why do I have to run `import eeauth`?
 
 Importing the package adds the `as_user` functions to `ee.Authenticate` and `ee.Initialize`. 
 
+[^registry]: Credentials are stored in `~/.config/eeauth/registry.json`.
 [^username]: Usernames do not need to match the name of your Google account.
-[^faq]: Nobody actually asked me these, I just figured they might. That's how FAQ's always work, right?
