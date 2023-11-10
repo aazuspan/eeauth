@@ -18,10 +18,16 @@ keywords = [
 ]
 dependencies = [
     "earthengine-api",
+    "click",
+    "rich",
+    "rich-click",
 ]
 
 [project.urls]
 Homepage = "https://github.com/aazuspan/eeauth"
+
+[project.scripts]
+eeauth = "eeauth.cli:cli"
 
 [tool.hatch.version]
 path = "src/eeauth/__init__.py"

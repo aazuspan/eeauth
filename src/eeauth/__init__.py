@@ -1,10 +1,11 @@
 import ee
 
 from .auth import (
-    _authenticate,
-    _initialize,
     activate_user,
+    authenticate,
+    get_default_user,
     get_initialized_user,
+    initialize,
     list_users,
     remove_user,
     reset,
@@ -17,10 +18,11 @@ __all__ = [
     "list_users",
     "remove_user",
     "get_initialized_user",
+    "get_default_user",
     "reset",
 ]
 
 
-for fn, wrapper in zip((ee.Authenticate, ee.Initialize), (_authenticate, _initialize)):
+for fn, wrapper in zip((ee.Authenticate, ee.Initialize), (authenticate, initialize)):
     if not hasattr(fn, "as_user"):
         fn.as_user = wrapper

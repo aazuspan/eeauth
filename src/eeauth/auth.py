@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import ee
 from google.oauth2.credentials import Credentials
@@ -42,7 +43,7 @@ def activate_user(user):
         json.dump(credentials, f)
 
 
-def _get_credentials(user) -> Credentials:
+def get_credentials(user) -> Credentials:
     """
     Retrieve OAuth Credentials for the registered user.
     """
@@ -51,7 +52,9 @@ def _get_credentials(user) -> Credentials:
 
 
 def get_initialized_user():
-    """Get the name of the currently initialized user."""
+    """
+    Get the name of the currently initialized user.
+    """
     credentials = ee.data._credentials
     if credentials is None:
         raise NotInitializedError("Earth Engine is not initialized.")
@@ -64,15 +67,28 @@ def get_initialized_user():
     raise UnknownUserError()
 
 
-def _initialize(user, *args, **kwargs):
+def get_default_user():
+    """
+    Get the name of the user in the persistent credentials.
+    """
+    refresh_token = ee.oauth.get_credentials_arguments()["refresh_token"]
+    with open_user_registry() as reg:
+        for user, creds in reg.items():
+            if creds["refresh_token"] == refresh_token:
+                return user
+
+    raise UnknownUserError()
+
+
+def initialize(user, *args, **kwargs):
     """
     Initialize Earth Engine using the credentials of the registered user.
     """
-    creds = _get_credentials(user)
+    creds = get_credentials(user)
     return ee.Initialize(creds, *args, **kwargs)
 
 
-def _authenticate(user, auth_mode="notebook", **kwargs):
+def authenticate(user, auth_mode="notebook", **kwargs):
     """
     Authenticate Earth Engine and store the credentials for the registered user.
 
@@ -84,6 +100,7 @@ def _authenticate(user, auth_mode="notebook", **kwargs):
     """
     ee.Authenticate(auth_mode=auth_mode, **kwargs)
     persistent_credentials = ee.oauth.get_credentials_arguments()
+    persistent_credentials["date_created"] = datetime.now().isoformat()
 
     with open_user_registry(read_only=False) as reg:
         reg[user] = persistent_credentials
