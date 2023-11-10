@@ -1,4 +1,5 @@
 import json
+from datetime import datetime
 
 import ee
 from google.oauth2.credentials import Credentials
@@ -64,6 +65,19 @@ def get_initialized_user():
     raise UnknownUserError()
 
 
+def get_default_user():
+    """Get the name of the user in the persistent credentials."""
+    with open_user_registry() as reg:
+        for user, creds in reg.items():
+            if (
+                creds["refresh_token"]
+                == ee.oauth.get_credentials_arguments()["refresh_token"]
+            ):
+                return user
+
+    raise UnknownUserError()
+
+
 def _initialize(user, *args, **kwargs):
     """
     Initialize Earth Engine using the credentials of the registered user.
@@ -84,6 +98,7 @@ def _authenticate(user, auth_mode="notebook", **kwargs):
     """
     ee.Authenticate(auth_mode=auth_mode, **kwargs)
     persistent_credentials = ee.oauth.get_credentials_arguments()
+    persistent_credentials["date_created"] = datetime.now().isoformat()
 
     with open_user_registry(read_only=False) as reg:
         reg[user] = persistent_credentials
