@@ -46,18 +46,19 @@ ee.data.getTaskList()
 The `eeauth` command line interface lets you manage your authenticated users from the terminal.
 
 ```bash
- Usage: eeauth [OPTIONS] COMMAND [ARGS]...                      
-                                                                
-╭─ Options ────────────────────────────────────────────────────╮
-│ --version      Show the version and exit.                    │
-│ --help         Show this message and exit.                   │
-╰──────────────────────────────────────────────────────────────╯
-╭─ Commands ───────────────────────────────────────────────────╮
-│ activate      Set USER as the default Earth Engine user.     │
-│ authenticate  Authenticate USER and store their credentials. │
-│ list          List all authenticated users.                  │
-│ remove        Remove USER from the registry.                 │
-╰──────────────────────────────────────────────────────────────╯
+Usage: eeauth [OPTIONS] COMMAND [ARGS]...
+
+  Manage Earth Engine authentication.
+
+Options:
+  --version  Show the version and exit.
+  --help     Show this message and exit.
+
+Commands:
+  activate      Set USER as the default Earth Engine user.
+  authenticate  Authenticate USER and store their credentials.
+  list          List all authenticated users.
+  remove        Remove USER from the registry.
 ```
 
 

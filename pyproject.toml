@@ -19,8 +19,7 @@ keywords = [
 dependencies = [
     "earthengine-api",
     "click",
-    "rich",
-    "rich-click",
+    "pydantic",
 ]
 
 [project.urls]
@@ -58,3 +57,6 @@ show-fixes = true
 
 [tool.ruff.isort]
 known-first-party = ["eeauth"]
+
+[tool.ruff.pyupgrade]
+keep-runtime-typing = true

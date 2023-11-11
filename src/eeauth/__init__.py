@@ -1,6 +1,6 @@
 import ee
 
-from .auth import (
+from .api import (
     activate_user,
     authenticate,
     get_default_user,
