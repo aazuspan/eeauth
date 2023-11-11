@@ -102,20 +102,27 @@ def mock_ee_initialize():
     ee.data._credentials = None
 
 
+def _get_json_contents_or_none(path):
+    """Return the contents of a file or None if it doesn't exist."""
+    if not Path(path).exists():
+        return None
+
+    with open(path) as f:
+        return json.load(f)
+
+
 @pytest.fixture(autouse=True)
 def _check_persistent_credentials_unchanged(request):
     """Check to make sure persistent EE credentials were not affected by tests."""
     # Setup
     path = ee.oauth.get_credentials_path()
-    with open(path) as f:
-        init_credentials = json.load(f)
+    init_credentials = _get_json_contents_or_none(path)
 
     yield
 
     # Teardown
     path = ee.oauth.get_credentials_path()
-    with open(path) as f:
-        credentials = json.load(f)
+    credentials = _get_json_contents_or_none(path)
 
     assert credentials == init_credentials
 
@@ -125,14 +132,12 @@ def _check_registry_unchanged(request):
     """Check to make sure the eeauth registry was not affected by tests."""
     # Setup
     path = user_registry.get_registry_path()
-    with open(path) as f:
-        init_registry = json.load(f)
+    init_registry = _get_json_contents_or_none(path)
 
     yield
 
     # Teardown
     path = user_registry.get_registry_path()
-    with open(path) as f:
-        registry = json.load(f)
+    registry = _get_json_contents_or_none(path)
 
     assert registry == init_registry
