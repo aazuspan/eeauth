@@ -1,23 +1,21 @@
-import rich_click as click
-from rich import print
-from rich.prompt import Confirm
-from rich.table import Table
+import click
 
-from .auth import (
+from .api import (
     activate_user,
     authenticate,
     get_default_user,
     list_users,
     remove_user,
 )
-from .errors import UnknownUserError, UserNotFoundError
-from .registry import open_user_registry
+from .exceptions import UnknownUserError, UserNotFoundError
+from .user_registry import UserRegistry
 
 
 @click.group()
 @click.version_option()
 def cli():
-    print("")
+    """Manage Earth Engine authentication."""
+    click.echo("")
 
 
 @cli.command(name="authenticate")
@@ -25,84 +23,60 @@ def cli():
 @click.option(
     "--auth-mode", "-m", default="notebook", help="The authentication mode to use."
 )
-def authenticate_command(user, auth_mode):
+def authenticate_command(user: str, auth_mode: str):
     """Authenticate USER and store their credentials."""
-    if user in list_users() and not Confirm.ask(
-        f"User [bold cyan]{user}[/] is already authenticated. Overwrite credentials?",
-        default=False,
-    ):
-        print("")
-        return
+    if user in (user.name for user in list_users()):
+        msg = f"User `{user}` is already authenticated. Overwrite credentials? [y/N] "
+        if input(msg).lower() != "y":
+            click.echo("Cancelling.\n")
+            return
 
     authenticate(user, auth_mode)
-    print(f"\nAuthenticated [bold cyan]{user}[/]!\n")
-    print(f"[italic]- Run `eeauth activate --user {user}` to set a new default user.\n")
+    click.echo(f"\nAuthenticated `{user}`!\n")
+    click.echo(f"* Run `eeauth activate {user}` to set a new default user.\n")
 
 
 @cli.command()
 @click.argument("user")
-def activate(user):
+def activate(user: str):
     """Set USER as the default Earth Engine user."""
     try:
         activate_user(user)
-        print(f"Activated [bold cyan]{user}[/] as the default Earth Engine user.\n")
+        click.echo(f"Activated `{user}` as the default Earth Engine user.\n")
     except UserNotFoundError:
-        print(f"User [bold cyan]{user}[/] not found in the registry.\n")
-        print("[italic]- Run `eeauth list` to see all authenticated users.")
-        print(f"[italic]- Run `eeauth authenticate --user {user}` to add a new user.\n")
+        click.echo(f"User `{user}` not found in the registry.\n")
+        click.echo("* Run `eeauth list` to see all authenticated users.")
+        click.echo(f"* Run `eeauth authenticate {user}` to add a new user.\n")
 
 
 @cli.command(name="list")
 def list_command():
     """List all authenticated users."""
-    table = Table(
-        title=f"Authenticated Users ({len(list_users())})",
-        caption="*default user",
-        expand=True,
-        min_width=60,
-    )
-    table.add_column("User")
-    table.add_column("Created", justify="right", style="dim")
+    click.echo(f"{'Name':<20}{'Created':>36}")
+    click.echo("-" * 56)
 
-    try:
-        default_user = get_default_user()
-    except UnknownUserError:
-        default_user = None
-
-    with open_user_registry() as reg:
-        for user, creds in reg.items():
-            date_created = creds.get("date_created")
-            row_style = None
-            if user == default_user:
-                user += "*"
-                row_style = "bold cyan"
-            table.add_row(user, date_created, style=row_style)
-
-    print(table)
-    print("")
+    registry = UserRegistry.open()
+    for user in registry.users.values():
+        star = "*" if _is_default_user(user.name) else ""
+        click.echo(f"{user.name + star:<20}{user.date_created:>36}")
+    click.echo("")
 
 
 @cli.command()
 @click.argument("user")
-def remove(user):
+def remove(user: str):
     """Remove USER from the registry."""
     try:
-        default_user = get_default_user()
-    except UnknownUserError:
-        default_user = None
-
-    if user == default_user and not Confirm.ask(
-        f"[bold cyan]{user}[/] is the default user. "
-        "Are you sure you want to remove it?",
-        default=False,
-    ):
-        print("Cancelling.\n")
-        return
-
-    try:
         remove_user(user)
-        print(f"Removed [bold cyan]{user}[/] from the registry.\n")
-        print("[italic]- The associated credentials have been forgotten.\n")
+        click.echo(f"Removed user `{user}` from the registry.\n")
     except UserNotFoundError:
-        print(f"User [bold cyan]{user}[/] not found in the registry.\n")
-        print("[italic]- Run `eeauth list` to see all authenticated users.\n")
+        click.echo(f"User `{user}` not found in the registry.\n")
+        click.echo("* Run `eeauth list` to see all authenticated users.\n")
+
+
+def _is_default_user(name: str) -> bool:
+    """Check if a user's name matches the default user."""
+    try:
+        return get_default_user().name == name
+    except UnknownUserError:
+        return False
