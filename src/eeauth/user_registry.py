@@ -3,7 +3,6 @@ from __future__ import annotations
 import json
 from copy import deepcopy
 from datetime import datetime
-from os import PathLike
 from pathlib import Path
 from typing import Optional
 
@@ -13,7 +12,9 @@ from pydantic import BaseModel
 
 from .exceptions import UnknownUserError, UserNotFoundError
 
-REGISTRY_PATH = Path("~/.config/eeauth/registry.json").expanduser()
+
+def get_registry_path() -> Path:
+    return Path("~/.config/eeauth/registry.json").expanduser()
 
 
 class Credentials(BaseModel):
@@ -72,9 +73,9 @@ class UserRegistry(BaseModel):
             self.save()
 
     @classmethod
-    def open(cls, path: str | PathLike = REGISTRY_PATH) -> UserRegistry:
-        """Create a user registry from a file."""
-        path = Path(path).expanduser()
+    def open(cls) -> UserRegistry:
+        """Create a user registry from the default file."""
+        path = get_registry_path()
 
         if not path.exists():
             path.parent.mkdir(parents=True, exist_ok=True)

@@ -68,7 +68,7 @@ def remove(user: str):
     """Remove USER from the registry."""
     try:
         remove_user(user)
-        click.echo(f"Removed user `{user}` from the registry.\n")
+        click.echo(f"Removed `{user}` from the registry.\n")
     except UserNotFoundError:
         click.echo(f"User `{user}` not found in the registry.\n")
         click.echo("* Run `eeauth list` to see all authenticated users.\n")

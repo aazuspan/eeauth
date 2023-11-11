@@ -10,6 +10,7 @@ from .api import (
     remove_user,
     reset,
 )
+from .exceptions import NotInitializedError, UnknownUserError, UserNotFoundError
 
 __version__ = "0.1.0"
 
@@ -20,6 +21,9 @@ __all__ = [
     "get_initialized_user",
     "get_default_user",
     "reset",
+    "NotInitializedError",
+    "UserNotFoundError",
+    "UnknownUserError",
 ]
 
 
