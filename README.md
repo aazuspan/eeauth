@@ -1,5 +1,8 @@
 # eeauth
 
+[![Earth Engine Python](https://img.shields.io/badge/Earth%20Engine%20API-Python-green)](https://developers.google.com/earth-engine/tutorials/community/intro-to-python-api)
+[![Build status](https://github.com/aazuspan/eeauth/actions/workflows/ci.yaml/badge.svg)](https://github.com/aazuspan/eeauth/actions/workflows/ci.yaml)
+
 An account manager for the Earth Engine Python API that lets you easily authenticate and switch between multiple Google accounts.
 
 ## Installation
