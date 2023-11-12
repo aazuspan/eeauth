@@ -19,7 +19,7 @@ keywords = [
 dependencies = [
     "earthengine-api",
     "click",
-    "pydantic",
+    "pydantic==2.*",
 ]
 
 [project.urls]
