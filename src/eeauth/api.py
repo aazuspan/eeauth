@@ -47,7 +47,7 @@ def get_initialized_user() -> User:
     """
     credentials = ee.data._credentials
     if credentials is None:
-        raise NotInitializedError("Earth Engine is not initialized.")
+        raise NotInitializedError()
 
     registry = UserRegistry.open()
     return registry.find_user(refresh_token=credentials.refresh_token)

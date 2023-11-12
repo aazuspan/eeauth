@@ -50,6 +50,12 @@ dependencies = [
 all = "pytest . {args}"
 cov = "pytest . --cov=src/eeauth {args}"
 
+[tool.pytest.ini_options]
+markers = [
+    "missing_registry: mark test as requiring a missing registry file",
+    "missing_credentials: mark test as requiring missing persistent credentials",
+]
+
 [tool.ruff]
 select = ["E", "I", "F", "B", "FA", "UP", "PT", "Q", "RET", "SIM", "PERF"]
 fix = true

@@ -7,7 +7,7 @@ import pytest
 
 from eeauth import user_registry
 
-MOCK_CREDENTIALS = {
+DEFAULT_CREDENTIALS = {
     "refresh_token": "1//refresh-token-1",
     "token_uri": "https://oauth2.googleapis.com/token",
     "client_id": "client-id.apps.googleusercontent.com",
@@ -18,42 +18,35 @@ MOCK_CREDENTIALS = {
     ],
 }
 
-MOCK_CREDENTIALS_2 = MOCK_CREDENTIALS.copy()
-MOCK_CREDENTIALS_2["refresh_token"] = "1//refresh-token-2"
+EXTRA_CREDENTIALS = DEFAULT_CREDENTIALS.copy()
+EXTRA_CREDENTIALS["refresh_token"] = "1//refresh-token-2"
 
 MOCK_REGISTRY = {
     "default_user": {
         "name": "default_user",
-        "credentials": MOCK_CREDENTIALS,
+        "credentials": DEFAULT_CREDENTIALS,
         "date_created": "2022-01-01",
     },
     "extra_user": {
         "name": "extra_user",
-        "credentials": MOCK_CREDENTIALS_2,
+        "credentials": EXTRA_CREDENTIALS,
         "date_created": "1954-01-01",
     },
 }
 
 
-@pytest.fixture()
-def registry(tmpdir):
+@pytest.fixture(autouse=True)
+def registry(tmpdir, request):
     """Build a test registry at a temporary path and point eeauth to it.
 
-    Each test invocation will get a new registry.
+    Each test invocation will get a new registry. Tests marked with "missing_registry"
+    will get a registry path that doesn't exist.
     """
     path = tmpdir.join("test_reg.json")
-    with open(path, "w") as f:
-        json.dump(MOCK_REGISTRY, f)
 
-    with patch("eeauth.user_registry.get_registry_path") as mock:
-        mock.return_value = Path(path)
-        yield mock
-
-
-@pytest.fixture()
-def missing_registry(tmpdir):
-    """Build a missing registry by pointing eeauth to a non-existent path."""
-    path = tmpdir.join("test_reg.json")
+    if "missing_registry" not in request.keywords:
+        with open(path, "w") as f:
+            json.dump(MOCK_REGISTRY, f)
 
     with patch("eeauth.user_registry.get_registry_path") as mock:
         mock.return_value = Path(path)
@@ -61,14 +54,17 @@ def missing_registry(tmpdir):
 
 
 @pytest.fixture(autouse=True)
-def persistent_credentials(tmpdir):
+def persistent_credentials(tmpdir, request):
     """Build persistent credentials at a temporary path and point EE to it.
 
-    Each test invocation will get a new set of credentials.
+    Each test invocation will get a new set of credentials. Tests marked with
+    "missing_credentials" will get a credentials path that doesn't exist.
     """
     path = tmpdir.join("credentials")
-    with open(path, "w") as f:
-        json.dump(MOCK_CREDENTIALS, f)
+
+    if "missing_credentials" not in request.keywords:
+        with open(path, "w") as f:
+            json.dump(DEFAULT_CREDENTIALS, f)
 
     with patch("ee.oauth.get_credentials_path") as mock:
         mock.return_value = str(path)

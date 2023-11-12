@@ -10,7 +10,7 @@ import ee
 from google.oauth2.credentials import Credentials as OAuthCredentials
 from pydantic import BaseModel
 
-from .exceptions import UnknownUserError, UserNotFoundError
+from .exceptions import NotAuthenticatedError, UnknownUserError, UserNotFoundError
 
 
 def get_registry_path() -> Path:
@@ -40,7 +40,12 @@ class Credentials(BaseModel):
     @classmethod
     def from_persistent_credentials(cls) -> Credentials:
         """Create credentials from the persistent Earth Engine credentials."""
-        return cls(**ee.oauth.get_credentials_arguments())
+        try:
+            args = ee.oauth.get_credentials_arguments()
+        except FileNotFoundError:
+            raise NotAuthenticatedError() from None
+
+        return cls(**args)
 
 
 class User(BaseModel):
