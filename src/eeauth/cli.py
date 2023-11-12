@@ -7,7 +7,7 @@ from .api import (
     list_users,
     remove_user,
 )
-from .exceptions import UnknownUserError, UserNotFoundError
+from .exceptions import NotAuthenticatedError, UnknownUserError, UserNotFoundError
 from .user_registry import UserRegistry
 
 
@@ -15,7 +15,7 @@ from .user_registry import UserRegistry
 @click.version_option()
 def cli():
     """Manage Earth Engine authentication."""
-    click.echo("")
+    click.echo("")  # pragma: no cover
 
 
 @cli.command(name="authenticate")
@@ -78,5 +78,5 @@ def _is_default_user(name: str) -> bool:
     """Check if a user's name matches the default user."""
     try:
         return get_default_user().name == name
-    except UnknownUserError:
+    except (UnknownUserError, NotAuthenticatedError):
         return False
