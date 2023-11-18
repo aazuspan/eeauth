@@ -1,5 +1,3 @@
-import ee
-
 from .api import (
     activate_user,
     authenticate,
@@ -20,6 +18,8 @@ from .exceptions import (
 __version__ = "0.1.1"
 
 __all__ = [
+    "initialize",
+    "authenticate",
     "activate_user",
     "list_users",
     "remove_user",
@@ -31,8 +31,3 @@ __all__ = [
     "UserNotFoundError",
     "UnknownUserError",
 ]
-
-
-for fn, wrapper in zip((ee.Authenticate, ee.Initialize), (authenticate, initialize)):
-    if not hasattr(fn, "as_user"):
-        fn.as_user = wrapper

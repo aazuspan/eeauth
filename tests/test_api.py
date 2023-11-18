@@ -41,7 +41,6 @@ def test_get_initialized_user():
 
 def test_initialize_as_user():
     """Test that ee.Initialize.as_user sets the requested user."""
-    # ee.Initialize is mocked, so we need to call the wrapper directly
     eeauth.initialize("extra_user")
     assert eeauth.get_initialized_user().name == "extra_user"
 
