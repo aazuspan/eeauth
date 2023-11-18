@@ -23,15 +23,15 @@ pip install eeauth
 
 ### Authenticate
 
-Import `eeauth`, then authenticate a user by running `ee.Authenticate.as_user("username")` and following the usual authentication instructions, being sure to select the correct Google account[^username]. The credentials for each authenticated user are stored by `eeauth` for later use.
+Import `eeauth`, then authenticate a user by running `eeauth.authenticate("username")` and following the usual authentication instructions[^authenticate], being sure to select the correct Google account[^username]. The credentials for each authenticated user are stored by `eeauth` for later use.
 
 ```python
 import ee
 import eeauth
 
 # Authenticate and register credentials for multiple accounts
-ee.Authenticate.as_user("personal")
-ee.Authenticate.as_user("work")
+eeauth.authenticate("personal")
+eeauth.authenticate("work")
 ```
 
 ### Initialize
@@ -40,11 +40,11 @@ With two users authenticated, you can now initialize Earth Engine with a specifi
 
 ```python
 # Get tasks from your "personal" account
-ee.Initialize.as_user("personal")
+eeauth.initialize("personal")
 ee.data.getTaskList()
 
 # And from your "work" account
-ee.Initialize.as_user("work")
+eeauth.initialize("work")
 ee.data.getTaskList()
 ```
 
@@ -83,9 +83,6 @@ Earth Engine will continue to store the most recently authenticated credentials,
 
 Like Earth Engine, `eeauth` stores your credentials in an unencrypted local file[^registry]. As long as you don't share that file, you should be good to go.
 
-### Why do I have to run `import eeauth`?
-
-Importing the package adds the `as_user` functions to `ee.Authenticate` and `ee.Initialize`. 
-
+[^authenticate]: `eeauth.authenticate` calls `ee.Authenticate` under the hood and accepts the same arguments. The only difference is that `eeauth.authenticate` stores your credentials with your requested username.
 [^registry]: Credentials are stored in `~/.config/eeauth/registry.json`.
 [^username]: Usernames do not need to match the name of your Google account.
