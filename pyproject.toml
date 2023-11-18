@@ -17,7 +17,7 @@ keywords = [
     "notebook",
 ]
 dependencies = [
-    "earthengine-api",
+    "earthengine-api>=0.1.317",
     "click",
     "pydantic==2.*",
 ]

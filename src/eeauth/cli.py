@@ -21,7 +21,7 @@ def cli():
 @cli.command(name="authenticate")
 @click.argument("user")
 @click.option(
-    "--auth-mode", "-m", default="notebook", help="The authentication mode to use."
+    "--auth-mode", "-m", default="localhost", help="The authentication mode to use."
 )
 def authenticate_command(user: str, auth_mode: str):
     """Authenticate USER and store their credentials."""
@@ -31,7 +31,7 @@ def authenticate_command(user: str, auth_mode: str):
             click.echo("Cancelling.\n")
             return
 
-    authenticate(user, auth_mode)
+    authenticate(user, auth_mode=auth_mode)
     click.echo(f"\nAuthenticated `{user}`!\n")
     click.echo(f"* Run `eeauth activate {user}` to set a new default user.\n")
 
