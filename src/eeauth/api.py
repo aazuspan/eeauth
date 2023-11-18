@@ -65,6 +65,14 @@ def get_default_user() -> User:
 def initialize(name: str, **kwargs) -> None:
     """
     Initialize Earth Engine using the credentials of the registered user.
+
+    Parameters
+    ----------
+    name : str
+        The name of the user to initialize. This name is used locally, and does not
+        need to match the associated Google account.
+    kwargs
+        Keyword arguments passed to `ee.Initialize`, such as `project`.
     """
     registry = UserRegistry.open()
     user = registry.get_user(name)
@@ -72,7 +80,7 @@ def initialize(name: str, **kwargs) -> None:
     ee.Initialize(credentials=credentials, **kwargs)
 
 
-def authenticate(name: str, auth_mode: str = "notebook", **kwargs) -> None:
+def authenticate(name: str, **kwargs) -> None:
     """
     Authenticate Earth Engine and store the credentials for the registered user.
 
@@ -81,8 +89,10 @@ def authenticate(name: str, auth_mode: str = "notebook", **kwargs) -> None:
     name : str
         The name of the user to authenticate. This name is used locally, and does not
         need to match the associated Google account.
+    kwargs
+        Keyword arguments passed to `ee.Authenticate`, such as `auth_mode`.
     """
-    ee.Authenticate(auth_mode=auth_mode, **kwargs)
+    ee.Authenticate(**kwargs)
     user = User.from_persistent_credentials(name=name)
 
     with UserRegistry.open() as registry:
